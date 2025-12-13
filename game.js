@@ -1,3 +1,14 @@
+
+const ResultText = document.querySelector("#ResultText")
+const ComputerChoiceText = document.querySelector("#ComputerChoiceText")
+
+const HumanScoreText = document.querySelector("#HumanScore")
+const ComputerScoreText = document.querySelector("#ComputerScore")
+
+let HumanScore = 0;
+let ComputerScore = 0;
+let bHasGameEnded = false;
+
 function getComputerChoice() {
 
     let choice = Math.random();
@@ -13,99 +24,115 @@ function getComputerChoice() {
     }
 }
 
-function getHumanChoice() {
-    return (prompt("Enter rock, paper or scissors: "))
+function resetGame() {
+    HumanScore = 0;
+    HumanScoreText.textContent = "Your Score: 0";
+    ComputerScore = 0;
+    ComputerScoreText.textContent = "Computer Score: 0";
+    ResultText.style.color = "Black";
+    bHasGameEnded = false;
 }
 
-function playRound(humanChoice, computerChoice) {
-
-    humanChoice = humanChoice.toString().toLowerCase();
-
-    const rockWin = "Rock beats Scissors";
-    const scissorsWin = "Scissors beats Paper";
-    const paperWin = "Paper beats Rock";
-
-    const winMessage = "You win! ";
-    const loseMessage = "You lose! ";
-    const drawMessage = "It's a draw!";
-
-    if (humanChoice == "rock") {
-        if (computerChoice == "rock") {
+function calculateWinner(HumanChoice, ComputerChoice){
+    if (HumanChoice == "rock") {
+        if (ComputerChoice == "rock") {
             return drawMessage;
         }
-        else if (computerChoice == "paper") {
+        else if (ComputerChoice == "paper") {
             return loseMessage + paperWin;
         }
-        else if (computerChoice == "scissors") {
+        else if (ComputerChoice == "scissors") {
             return winMessage + rockWin;
         }
     }
-    else if (humanChoice == "paper") {
-        if (computerChoice == "rock") {
+    else if (HumanChoice == "paper") {
+        if (ComputerChoice == "rock") {
             return winMessage + paperWin;
         }
-        else if (computerChoice == "paper") {
+        else if (ComputerChoice == "paper") {
             return drawMessage;
         }
-        else if (computerChoice == "scissors") {
+        else if (ComputerChoice == "scissors") {
             return loseMessage + scissorsWin;
         }
     }
-    else if (humanChoice == "scissors") {
-        if (computerChoice == "rock") {
+    else if (HumanChoice == "scissors") {
+        if (ComputerChoice == "rock") {
             return loseMessage + rockWin;
         }
-        else if (computerChoice == "paper") {
+        else if (ComputerChoice == "paper") {
             return winMessage + scissorsWin;
         }
-        else if (computerChoice == "scissors") {
+        else if (ComputerChoice == "scissors") {
             return drawMessage;
         }
     }
+}
+
+function playRound(e) {
+
+    if (bHasGameEnded) {
+        resetGame();
+    }
+
+    HumanChoice = e.target.textContent;
+
+    HumanChoice = HumanChoice.toString().toLowerCase();
+    let ComputerChoice = getComputerChoice();
+
+    ComputerChoiceText.textContent = "Computer Chose: " + ComputerChoice;
+
+    let resultMessage = calculateWinner(HumanChoice, ComputerChoice)
+
+
+
+
+    
+
+    if (resultMessage.includes("win")) {
+        HumanScore++;
+        HumanScoreText.textContent = "Your Score: " + HumanScore;
+    }
+    else if (resultMessage.includes("lose")) {
+        ComputerScore++;
+        ComputerScoreText.textContent = "Computer Score: " + ComputerScore;
+    }
+
+    ResultText.textContent = resultMessage;
+
+    if (HumanScore >= 5) {
+        ResultText.textContent = "You win the whole game!"
+        ResultText.style.color = "green";
+        bHasGameEnded = true;
+    }
+    else if (ComputerScore >= 5) {
+        ResultText.textContent = "Computer won the whole game! Better luck next time."
+        ResultText.style.color = "red";
+        bHasGameEnded = true;
+    }
+
+
 
 }
 
-function playGame(numRounds) {
-    let humanScore = 0;
-    let computerScore = 0;
 
-    for (let i = 1; i <= numRounds; i++) {
+const rockWin = "Rock beats Scissors";
+const scissorsWin = "Scissors beats Paper";
+const paperWin = "Paper beats Rock";
 
-        alert("Round " + i + "/" + numRounds);
+const winMessage = "You win! ";
+const loseMessage = "You lose! ";
+const drawMessage = "It's a draw!";
 
-        const humanChoice = getHumanChoice();
-        const computerChoice = getComputerChoice();
+const RockButton = document.querySelector("#RockButton");
+const PaperButton = document.querySelector("#PaperButton");
+const ScissorsButton = document.querySelector("#ScissorsButton");
 
-        alert("Computer chose " + computerChoice);
-        let firstRound = playRound(humanChoice, computerChoice);
+RockButton.addEventListener("click", playRound)
+PaperButton.addEventListener("click", playRound)
+ScissorsButton.addEventListener("click", playRound)
 
-        alert(firstRound);
 
-        if (firstRound.includes("win")) {
-            humanScore++;
-        }
-        else if (firstRound.includes("lose")) {
-            computerScore++;
-        }
-
-        alert("Your score is: " + humanScore + "  The computers score is: " + computerScore);
-    }
-
-    alert("All rounds have been played. Time to reveal the score...")
-
-    if (humanScore > computerScore) {
-        alert("You won the whole game! Congrats!")
-    }
-    else if (humanScore < computerScore) {
-        alert("You lost the whole game. Better luck next time buddy.")
-    }
-    else {
-        alert("The whole game is a draw!")
-    }
-
-}
-
-playGame(5);
 
 
 
